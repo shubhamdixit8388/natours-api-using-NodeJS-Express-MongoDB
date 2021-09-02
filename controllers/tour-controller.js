@@ -2,6 +2,28 @@ const fs = require('fs');
 
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
+exports.checkTourId = (req, res, next, value) => {
+  const id = +req.params.id;
+  const requestedTour = tours.find(tour => tour.id === id)
+  if (!requestedTour) {
+    return res.status(404).send({
+      status: 'fail',
+      message: 'Invalid ID'
+    });
+  }
+  next();
+}
+
+exports.checkBody = (req, res, next) => {
+  if (!(req.body.name && req.body.price)) {
+    return res.status(400).send({
+      status: 'fail',
+      message: 'Missing name or price'
+    });
+  }
+  next();
+}
+
 exports.getAllTours = (req, res) => {
   res.status(200).send({
     status: 'success',
@@ -29,30 +51,17 @@ exports.addNewTour = (req, res) => {
 exports.getTourById = (req, res) => {
   const id = +req.params.id;
   const requestedTour = tours.find(tour => tour.id === id)
-  if (requestedTour) {
-    res.status(200).send({
-      status: 'success',
-      data: {
-        tour: requestedTour
-      }
-    });
-  } else {
-    res.status(404).send({
-      status: 'fail',
-      message: 'Invalid ID'
-    });
-  }
+  res.status(200).send({
+    status: 'success',
+    data: {
+      tour: requestedTour
+    }
+  });
 };
 
 exports.updateTour = (req, res) => {
   const id = +req.params.id;
-  const requestedTour = tours.find(tour => tour.id === id)
-  if (!requestedTour) {
-    return res.status(404).send({
-      status: 'fail',
-      message: 'Invalid ID'
-    });
-  }
+  const requestedTour = tours.find(tour => tour.id === id);
   res.status(200).send({
     status: 'success',
     data: {
@@ -62,17 +71,8 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTourById = (req, res) => {
-  const id = +req.params.id;
-  const requestedTour = tours.find(tour => tour.id === id)
-  if (!requestedTour) {
-    res.status(404).send({
-      status: 'fail',
-      message: 'Invalid ID'
-    });
-  } else {
-    res.status(204).send({
-      status: 'success',
-      data: null
-    });
-  }
+  res.status(204).send({
+    status: 'success',
+    data: null
+  });
 };
