@@ -24,7 +24,7 @@ exports.getAllTours = async (req, res) => {
     console.log(reqQuery);
     let query = Tour.find(JSON.parse(reqQuery));
 
-    // 2)Sorting
+    // 2) Sorting
     if (req.query.sort) {
       query = query.sort(req.query.sort);
       // sort('-price -duration') // descending sorting, first priority is price nd second is duration
@@ -39,6 +39,16 @@ exports.getAllTours = async (req, res) => {
     } else {
       // Excluding '__v'
       query = query.select('-__v');
+    }
+
+    // 4) Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const totalCount = await Tour.countDocuments();
+      if (skip >= totalCount) throw new Error('Requested page does not exist!');
     }
 
     // Execute query
@@ -59,7 +69,7 @@ exports.getAllTours = async (req, res) => {
     console.log(error);
     res.status(400).send({
       status: 'Fail',
-      message: error
+      message: error.message
     })
   }
 
