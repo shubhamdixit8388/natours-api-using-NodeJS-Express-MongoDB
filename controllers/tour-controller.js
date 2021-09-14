@@ -24,12 +24,21 @@ exports.getAllTours = async (req, res) => {
     console.log(reqQuery);
     let query = Tour.find(JSON.parse(reqQuery));
 
-    // Sorting
+    // 2)Sorting
     if (req.query.sort) {
       query = query.sort(req.query.sort);
       // sort('-price -duration') // descending sorting, first priority is price nd second is duration
     } else {
       query = query.sort('-createdAt');
+    }
+
+    // 3) Field Selection
+    if (req.query.fields) {
+      const fields = JSON.stringify(req.query.fields).split(',').join(' ');
+      query = query.select(JSON.parse(fields));
+    } else {
+      // Excluding '__v'
+      query = query.select('-__v');
     }
 
     // Execute query
