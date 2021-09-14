@@ -12,7 +12,33 @@ exports.checkBody = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    // 1A) Filtering
+    let reqQuery = {...req.query};
+    const excludeQueries = ['page', 'sort', 'limit', 'fields'];
+    excludeQueries.forEach(excludeQuery => delete reqQuery[excludeQuery]);
+
+    // 2B) Advanced filtering
+    reqQuery = JSON.stringify(reqQuery).replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
+
+    // Build query
+    console.log(reqQuery);
+    let query = Tour.find(JSON.parse(reqQuery));
+
+    // Sorting
+    if (req.query.sort) {
+      query = query.sort(req.query.sort);
+      // sort('-price -duration') // descending sorting, first priority is price nd second is duration
+    } else {
+      query = query.sort('-createdAt');
+    }
+
+    // Execute query
+    const tours = await query;
+
+    // Chaining to query
+    // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
+
+    // Send response
     res.status(200).send({
       status: 'success',
       results: tours.length,
@@ -21,6 +47,7 @@ exports.getAllTours = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(error);
     res.status(400).send({
       status: 'Fail',
       message: error
