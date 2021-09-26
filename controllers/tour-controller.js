@@ -1,4 +1,5 @@
 const Tour = require('../models/tour-model');
+const APIFeatures = require('./../utils/api-features');
 
 exports.checkBody = (req, res, next) => {
   // if (!(req.body.name && req.body.price)) {
@@ -10,49 +11,24 @@ exports.checkBody = (req, res, next) => {
   next();
 }
 
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingAverage, price';
+  req.query.fields = 'name, price, ratingsAverage, summary, difficulty';
+  next();
+}
+
+
+
 exports.getAllTours = async (req, res) => {
   try {
-    // 1A) Filtering
-    let reqQuery = {...req.query};
-    const excludeQueries = ['page', 'sort', 'limit', 'fields'];
-    excludeQueries.forEach(excludeQuery => delete reqQuery[excludeQuery]);
-
-    // 2B) Advanced filtering
-    reqQuery = JSON.stringify(reqQuery).replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
-
-    // Build query
-    console.log(reqQuery);
-    let query = Tour.find(JSON.parse(reqQuery));
-
-    // 2) Sorting
-    if (req.query.sort) {
-      query = query.sort(req.query.sort);
-      // sort('-price -duration') // descending sorting, first priority is price nd second is duration
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // 3) Field Selection
-    if (req.query.fields) {
-      const fields = JSON.stringify(req.query.fields).split(',').join(' ');
-      query = query.select(JSON.parse(fields));
-    } else {
-      // Excluding '__v'
-      query = query.select('-__v');
-    }
-
-    // 4) Pagination
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
-    if (req.query.page) {
-      const totalCount = await Tour.countDocuments();
-      if (skip >= totalCount) throw new Error('Requested page does not exist!');
-    }
-
+    const featuresApi = new APIFeatures(Tour.find(), req.query)
+        .filter()
+        .sort()
+        .fieldSelection()
+        .pagination();
     // Execute query
-    const tours = await query;
+    const tours = await featuresApi.query;
 
     // Chaining to query
     // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
