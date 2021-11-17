@@ -44,6 +44,10 @@ const tourSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  secretTour: {
+    type: Boolean,
+    default: false
+  },
   imageCover: {
     type: String,
     required: [true, 'A tour must have a cover image']
@@ -66,10 +70,21 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, {lower: true})
   next();
 })
-
 tourSchema.post('save', function (document, next) {
   // console.log(document);
   next();
 })
+
+// QUERY Middleware - e.g. find, findOneAndUpdate, etc.
+// tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+    this.find({secretTour: {$ne: true}});
+    this.start = Date.now();
+    next();
+});
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`)
+  next();
+});
 
 module.exports = mongoose.model('Tour', tourSchema);
