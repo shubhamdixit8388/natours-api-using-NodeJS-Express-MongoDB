@@ -23,5 +23,23 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
 
+// Handling unknown route
+app.all('*', (req, res, next) => {
+  const err = new Error('Requested url not found');
+  err.statusCode = 404;
+  err.status = 'fail';
+  next(err);
+})
+
+app.use((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 500;
+
+  res.status(err.statusCode).send({
+    status: err.status,
+    message: err.message
+  })
+})
+
 // Start Server
 module.exports = app;
