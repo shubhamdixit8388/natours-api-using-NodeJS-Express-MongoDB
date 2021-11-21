@@ -19,6 +19,12 @@ const handleDuplicateFieldsError = err => {
   return new AppError(message, 400);
 }
 
+const handleValidationError = err => {
+  const errors = Object.values(err.errors).map(element => element.message);
+  const message = `Invalid input data. ${errors.join(' ')}`;
+  return new AppError(message, 400);
+}
+
 const sendErrorToProd = (err, res) => {
   // Trusted operational errors for client : send message to client
   if (err.isOperational) {
@@ -46,14 +52,18 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorToDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err };
+    console.error('Error: ', err);
+    let error = JSON.parse(JSON.stringify(err));
 
     // Error by mongoose
-    if (err.name === 'CastError') error = handleCastErrorDB(error);
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
 
     //Error by underlying mongoDB driver
-    if (err.code === 11000) error = handleDuplicateFieldsError(error);
+    if (error.code === 11000) error = handleDuplicateFieldsError(error);
+
+    if (error._message === 'Validation failed') error = handleValidationError(err)
 
     sendErrorToProd(error, res);
   }
 }
+

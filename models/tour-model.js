@@ -7,7 +7,8 @@ const tourSchema = new mongoose.Schema({
     // required: true
     required: [true, 'A tour must have a name'],
     unique: true,
-    trim: true
+    trim: true,
+    minlength: 10
   },
   slug: String,
   duration: {
@@ -24,7 +25,9 @@ const tourSchema = new mongoose.Schema({
   },
   ratingsAverage: {
     type: Number,
-    default: 4.5
+    default: 4.5,
+    max: 5,
+    min: 0
   },
   ratingsQuantity: {
     type: Number,
