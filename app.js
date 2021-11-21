@@ -2,6 +2,8 @@ const express = require('express');
 
 const userRoutes = require('./routes/user-routes');
 const tourRoutes = require('./routes/tour-routes');
+const AppError = require('./utils/app-error');
+const globalErrorHandler = require('./controllers/error-controller');
 
 const morgan = require('morgan');
 
@@ -25,21 +27,14 @@ app.use('/api/v1/users', userRoutes);
 
 // Handling unknown route
 app.all('*', (req, res, next) => {
-  const err = new Error('Requested url not found');
-  err.statusCode = 404;
-  err.status = 'fail';
-  next(err);
+  // const err = new Error('Requested url not found');
+  // err.statusCode = 404;
+  // err.status = 'fail';
+
+  next(new AppError('Requested url not found', 404));
 })
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 500;
-
-  res.status(err.statusCode).send({
-    status: err.status,
-    message: err.message
-  })
-})
+app.use(globalErrorHandler);
 
 // Start Server
 module.exports = app;
