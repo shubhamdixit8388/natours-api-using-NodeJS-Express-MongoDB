@@ -14,6 +14,11 @@ const handleCastErrorDB = err => {
   return new AppError(message, 400);
 }
 
+const handleDuplicateFieldsError = err => {
+  const message = `Duplicate field value ${err.keyValue.name}. Please use another value`;
+  return new AppError(message, 400);
+}
+
 const sendErrorToProd = (err, res) => {
   // Trusted operational errors for client : send message to client
   if (err.isOperational) {
@@ -42,7 +47,12 @@ module.exports = (err, req, res, next) => {
     sendErrorToDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+
+    // Error by mongoose
     if (err.name === 'CastError') error = handleCastErrorDB(error);
+
+    //Error by underlying mongoDB driver
+    if (err.code === 11000) error = handleDuplicateFieldsError(error);
 
     sendErrorToProd(error, res);
   }
