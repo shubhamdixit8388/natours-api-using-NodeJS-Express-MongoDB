@@ -21,7 +21,7 @@ const handleDuplicateFieldsError = err => {
 
 const handleValidationError = err => {
   const errors = Object.values(err.errors).map(element => element.message);
-  const message = `Invalid input data. ${errors.join(' ')}`;
+  const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 }
 
@@ -62,6 +62,7 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleDuplicateFieldsError(error);
 
     if (error._message === 'Validation failed') error = handleValidationError(err)
+    if (error.name === 'ValidationError') error = handleValidationError(err)
 
     sendErrorToProd(error, res);
   }
