@@ -25,6 +25,14 @@ const handleValidationError = err => {
   return new AppError(message, 400);
 }
 
+const handleJsonWebTokenError = () => {
+  return new AppError('Unauthenticated user', 401);
+}
+
+const handleTokenExpiredError = () => {
+  return new AppError('Authentication token expired, please login again', 401);
+}
+
 const sendErrorToProd = (err, res) => {
   // Trusted operational errors for client : send message to client
   if (err.isOperational) {
@@ -63,6 +71,8 @@ module.exports = (err, req, res, next) => {
 
     if (error._message === 'Validation failed') error = handleValidationError(err)
     if (error.name === 'ValidationError') error = handleValidationError(err)
+    if (error.name === 'JsonWebTokenError') error = handleJsonWebTokenError()
+    if (error.name === 'TokenExpiredError') error = handleTokenExpiredError()
 
     sendErrorToProd(error, res);
   }
