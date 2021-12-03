@@ -16,7 +16,8 @@ exports.signup = catchAsync(async(req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.passwordConfirm,
+    // passwordChangedAt: req.body.passwordChangedAt
   });
 
   const token = getJWT(newUser._id);
@@ -72,6 +73,11 @@ exports.authenticateUser = catchAsync(async (req, res, next) => {
   }
 
   // If user changed password after jwt was issued
+  if (user.checkPasswordChanged(decodedToken.iat)) {
+    return next(new AppError('Password recently changed, login again', 401));
+  }
 
+  // grant access to protected route
+  req.user = user;
   next();
 });

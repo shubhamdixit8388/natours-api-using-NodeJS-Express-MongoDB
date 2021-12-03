@@ -62,7 +62,7 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     console.error('Error: ', err);
     let error = JSON.parse(JSON.stringify(err));
-
+    error.message = err.message;
     // Error by mongoose
     if (error.name === 'CastError') error = handleCastErrorDB(error);
 
