@@ -91,3 +91,23 @@ exports.checkUserRole = (...roles) => {
     next();
   }
 }
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1. get user matching email
+  const user = await User.findOne({email: req.body.email});
+  if (!user) {
+    return next(new AppError('User with this email does not exist', 404));
+  }
+
+  // 2. generate random token to reset password
+  const resetToken = user.getPasswordResetToken();
+  // not validating fields while saving to DB. This is not required in my case, still implemented for reference
+  await user.save({validateBeforeSave: false});
+  console.log('resetToken:', user);
+
+  // 3. send mail to user having reset token
+
+  res.status(200).send({
+    status: 'success'
+  })
+})
