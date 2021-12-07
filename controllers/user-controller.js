@@ -53,6 +53,14 @@ exports.updateMe = catchAsync(async (req, res,next) => {
   })
 });
 
+exports.deleteMe = catchAsync(async (req, res) => {
+  await User.findByIdAndUpdate(req.user._id, {isActive: false});
+
+  res.status(204).send({
+    status: 'success'
+  })
+});
+
 exports.updateUser = (req, res) => {
   res.status(500).send({
     status: 'Invalid',
