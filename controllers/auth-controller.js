@@ -146,7 +146,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 3. update changePasswordAt
-
   // 4. Log the user in, send JWT
   createSendToken(user, 200, res);
 });
@@ -162,7 +161,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 3. update password
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  await user.save(); // user.findByIdAndUpdate will not wor all validators
+  await user.save(); // user.findByIdAndUpdate will not check all validators
 
   // 4. log in user and send jwt
   createSendToken(user, 200, res);
