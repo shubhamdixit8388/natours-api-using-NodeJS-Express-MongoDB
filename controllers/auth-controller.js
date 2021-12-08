@@ -15,11 +15,18 @@ const getJWT = (id) => {
 
 const createSendToken = (user, statusCode, res) => {
   const token = getJWT(user._id);
+  const cookieOptions = {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24  * 60 * 60 * 1000),
+    httpOnly: true
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('jwt', token, cookieOptions);
+  // It deletes password variable from object
+  user.password = undefined;
   res.status(statusCode).send({
     status: 'success',
     token,
     data: {
-      asd: 'asd',
       user: user
     }
   });
