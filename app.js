@@ -3,6 +3,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
+const hpp = require('hpp');
 
 const userRoutes = require('./routes/user-routes');
 const tourRoutes = require('./routes/tour-routes');
@@ -25,6 +26,11 @@ app.use(mongoSanitize());
 // Data sanitization - against XSS(cross site scripting) attack i.e. malicious code -
 // If user send html code in some field then it will be converted of DB
 app.use(xssClean());
+
+// Prevent parameter pollution using hpp(http parameter pollution) package
+app.use(hpp({
+  whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price']
+}));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
