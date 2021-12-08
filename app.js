@@ -1,4 +1,9 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
+const hpp = require('hpp');
 
 const userRoutes = require('./routes/user-routes');
 const tourRoutes = require('./routes/tour-routes');
@@ -7,17 +12,46 @@ const globalErrorHandler = require('./controllers/error-controller');
 
 const morgan = require('morgan');
 
-// Middlewares
+// GLOBAL Middlewares
 const app = new express();
-app.use(express.json());
+
+// helmet headers. Helmet is a collection of 14 middleware which adds different header options for security reason
+app.use(helmet());
+
+// Body parse, reading data from body to req.body. Here we set maximum of 10 KB of data in each request body
+app.use(express.json({limit: '10kb'}));
+
+// Data sanitization - against No-Sql query injection
+app.use(mongoSanitize());
+// Data sanitization - against XSS(cross site scripting) attack i.e. malicious code -
+// If user send html code in some field then it will be converted of DB
+app.use(xssClean());
+
+// Prevent parameter pollution using hpp(http parameter pollution) package
+app.use(hpp({
+  whitelist: ['duration', 'ratingsQuantity', 'ratingsAverage', 'maxGroupSize', 'difficulty', 'price']
+}));
+
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// limit request for API from same IP address
+const limiter = rateLimit({
+  max: 2, // Based on application limit
+  windowMs: 60 * 60 * 1000, // in milliseconds
+  message: 'Too many requests from this IP, please try after an hour'
+});
+app.use('/api', limiter);
+
+// Serving static files
 app.use(express.static(`${__dirname}/public`))
 
+// Test middleware
 app.use((req, res, next) => {
-  console.log('This is middleware');
+  req.requestTime = new Date().toISOString();
+  // console.log(req.headers);
   next();
 });
 
