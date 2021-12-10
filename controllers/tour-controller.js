@@ -55,7 +55,7 @@ exports.addNewTour = catchAsync(async (req, res, next) => {
 exports.getTourById = catchAsync(async (req, res, next) => {
   // const tour = await Tour.findOne({_id: req.params.id});
   // const tour = await Tour.findById(req.params.id).populate('guides');
-  const tour = await Tour.findById(req.params.id).populate({
+  const tour = await Tour.findById(req.params.id).populate('reviews').populate({
     path: 'guides',
     select: '-__v -passwordChangedAt'
   });
