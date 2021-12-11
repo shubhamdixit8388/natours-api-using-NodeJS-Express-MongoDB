@@ -33,17 +33,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addNewTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).send({
-    status: 'success',
-    data: {
-      tour: newTour
-    }
-  });
-});
-
-exports.getTourById = catchAsync(async (req, res, next) => {
+    exports.getTourById = catchAsync(async (req, res, next) => {
   // const tour = await Tour.findOne({_id: req.params.id});
   // const tour = await Tour.findById(req.params.id).populate('guides');
   const tour = await Tour.findById(req.params.id).populate('reviews').populate({
@@ -63,6 +53,20 @@ exports.getTourById = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.addNewTour = factory.addOne(Tour);
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTourById = factory.deleteOne(Tour);
+
+// exports.addNewTour = catchAsync(async (req, res, next) => {
+//   const newTour = await Tour.create(req.body);
+//   res.status(201).send({
+//     status: 'success',
+//     data: {
+//       tour: newTour
+//     }
+//   });
+// });
+
 // exports.updateTour = catchAsync(async (req, res, next) => {
 //   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
 //     new: true,
@@ -80,7 +84,6 @@ exports.getTourById = catchAsync(async (req, res, next) => {
 //     }
 //   });
 // });
-exports.updateTour = factory.updateOne(Tour);
 
 // exports.deleteTourById = catchAsync(async (req, res, next) => {
 //   const tour = await Tour.findByIdAndDelete(req.params.id);
@@ -93,5 +96,3 @@ exports.updateTour = factory.updateOne(Tour);
 //     status: 'success'
 //   });
 // });
-
-exports.deleteTourById = factory.deleteOne(Tour);

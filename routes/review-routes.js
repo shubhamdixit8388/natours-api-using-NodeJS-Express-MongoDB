@@ -8,8 +8,7 @@ const router = express.Router({mergeParams: true});
 // POST /tours/<tourId>/reviews
 router.route('')
     .get(authController.authenticateUser, reviewController.getAllReviews)
-    .post(authController.authenticateUser, authController.checkUserRole('user'),
-        reviewController.createReview);
+    .post(authController.authenticateUser, reviewController.setTourUserId, reviewController.createReview);
 
 router.route('/:id')
     .delete(authController.authenticateUser, authController.checkUserRole('admin'),
