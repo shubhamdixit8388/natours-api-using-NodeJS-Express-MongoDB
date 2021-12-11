@@ -18,10 +18,13 @@ router.route('/top-5-cheap').get(toursController.aliasTopTours, toursController.
 
 router.route('/')
     .get(toursController.getAllTours)
-    .post(authController.authenticateUser, toursController.addNewTour);
+    .post(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
+        toursController.addNewTour);
 router.route('/:id')
     .get(toursController.getTourById)
-    .patch(toursController.updateTour)
-    .delete(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'), toursController.deleteTourById);
+    .patch(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
+        toursController.updateTour)
+    .delete(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
+        toursController.deleteTourById);
 
 module.exports = router;
