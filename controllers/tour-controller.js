@@ -2,16 +2,7 @@ const Tour = require('../models/tour-model');
 const APIFeatures = require('./../utils/api-features');
 const catchAsync = require('../utils/catch-async');
 const AppError = require('../utils/app-error');
-
-exports.checkBody = (req, res, next) => {
-  // if (!(req.body.name && req.body.price)) {
-  //   return res.status(400).send({
-  //     status: 'fail',
-  //     message: 'Missing name or price'
-  //   });
-  // }
-  next();
-}
+const factory = require('./handler-factory');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -90,14 +81,16 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteTourById = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
+// exports.deleteTourById = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//
+//   if(!tour) {
+//     return next(new AppError('No tour found with this id', 404));
+//   }
+//
+//   res.status(204).send({
+//     status: 'success'
+//   });
+// });
 
-  if(!tour) {
-    return next(new AppError('No tour found with this id', 404));
-  }
-
-  res.status(204).send({
-    status: 'success'
-  });
-});
+exports.deleteTourById = factory.deleteOne(Tour);
