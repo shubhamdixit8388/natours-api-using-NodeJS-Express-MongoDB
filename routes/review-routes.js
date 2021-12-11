@@ -11,6 +11,7 @@ router.route('')
     .post(authController.authenticateUser, reviewController.setTourUserId, reviewController.createReview);
 
 router.route('/:id')
+    .get(authController.authenticateUser, reviewController.getReviewById)
     .delete(authController.authenticateUser, authController.checkUserRole('admin'),
     reviewController.deleteReviewById)
     .patch(authController.authenticateUser, reviewController.updateReviewById);

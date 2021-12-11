@@ -22,19 +22,19 @@ exports.getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-exports.getUserById = (req, res) => {
-  res.status(500).send({
-    status: 'Invalid',
-    message: 'THis API is not implemented'
-  });
-};
+// exports.getUserById = (req, res) => {
+//   res.status(500).send({
+//     status: 'Invalid',
+//     message: 'THis API is not implemented'
+//   });
+// };
 
-exports.addNewUser = (req, res) => {
-  res.status(500).send({
-    status: 'Invalid',
-    message: 'THis API is not implemented'
-  });
-};
+// exports.addNewUser = (req, res) => {
+//   res.status(500).send({
+//     status: 'Invalid',
+//     message: 'THis API is not implemented'
+//   });
+// };
 
 exports.updateMe = catchAsync(async (req, res,next) => {
   // 1. create error if user post password related data
@@ -78,3 +78,5 @@ exports.updateUser = factory.updateOne(User);
 //   });
 // };
 exports.deleteUserById = factory.deleteOne(User);
+exports.addNewUser = factory.addOne(User);
+exports.getUserById = factory.getOne(User);
