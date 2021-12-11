@@ -38,3 +38,22 @@ exports.updateOne = Model => catchAsync(async (req, res, next) => {
     }
   });
 });
+
+exports.getOne = (Model, populateOptions) => catchAsync(async (req, res, next) => {
+  let query = Model.findById(req.params.id);
+  if (populateOptions) {
+    populateOptions.forEach(populateOption => {
+      query = query.populate(populateOption);
+    });
+  }
+  const doc = await query;
+  if(!doc) {
+    return next(new AppError('No document found with this id', 404));
+  }
+  res.status(200).send({
+    status: 'success',
+    data: {
+      doc
+    }
+  });
+});

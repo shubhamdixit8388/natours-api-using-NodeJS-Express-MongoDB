@@ -33,25 +33,27 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 
-    exports.getTourById = catchAsync(async (req, res, next) => {
-  // const tour = await Tour.findOne({_id: req.params.id});
-  // const tour = await Tour.findById(req.params.id).populate('guides');
-  const tour = await Tour.findById(req.params.id).populate('reviews').populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt'
-  });
+// exports.getTourById = catchAsync(async (req, res, next) => {
+//   // const tour = await Tour.findOne({_id: req.params.id});
+//   // const tour = await Tour.findById(req.params.id).populate('guides');
+//   const tour = await Tour.findById(req.params.id).populate('guides');
+//
+//   if(!tour) {
+//      return next(new AppError('No tour found with this id', 404));
+//   }
+//
+//   res.status(200).send({
+//     status: 'success',
+//     data: {
+//       tour: tour
+//     }
+//   });
+// });
 
-  if(!tour) {
-     return next(new AppError('No tour found with this id', 404));
-  }
-
-  res.status(200).send({
-    status: 'success',
-    data: {
-      tour: tour
-    }
-  });
-});
+exports.getTourById = factory.getOne(Tour, ['reviews', {
+                        path: 'guides',
+                        select: '-__v -passwordChangedAt'
+                      }]);
 
 exports.addNewTour = factory.addOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
