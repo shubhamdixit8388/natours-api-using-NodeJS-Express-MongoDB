@@ -17,6 +17,11 @@ exports.updateUser = factory.updateOne(User);
 exports.deleteUserById = factory.deleteOne(User);
 exports.getAllUsers = factory.getAll(User);
 
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 exports.updateMe = catchAsync(async (req, res,next) => {
   // 1. create error if user post password related data
   if (req.body.password || req.body.passwordConfirm) {
