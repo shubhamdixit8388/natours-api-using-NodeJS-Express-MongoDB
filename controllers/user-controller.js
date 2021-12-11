@@ -63,17 +63,18 @@ exports.deleteMe = catchAsync(async (req, res) => {
   })
 });
 
-exports.updateUser = (req, res) => {
-  res.status(500).send({
-    status: 'Invalid',
-    message: 'THis API is not implemented'
-  });
-};
+// exports.updateUser = (req, res) => {
+//   res.status(500).send({
+//     status: 'Invalid',
+//     message: 'THis API is not implemented'
+//   });
+// };
+exports.updateUser = factory.updateOne(User);
 
-exports.deleteUserById = factory.deleteOne(User);
 // exports.deleteUserById = (req, res) => {
 //   res.status(500).send({
 //     status: 'Invalid',
 //     message: 'THis API is not implemented'
 //   });
 // };
+exports.deleteUserById = factory.deleteOne(User);

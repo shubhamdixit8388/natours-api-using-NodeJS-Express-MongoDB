@@ -11,7 +11,9 @@ router.route('')
     .post(authController.authenticateUser, authController.checkUserRole('user'),
         reviewController.createReview);
 
-router.route('/:id').delete(authController.authenticateUser, authController.checkUserRole('admin'),
-    reviewController.deleteReviewById);
+router.route('/:id')
+    .delete(authController.authenticateUser, authController.checkUserRole('admin'),
+    reviewController.deleteReviewById)
+    .patch(authController.authenticateUser, reviewController.updateReviewById);
 
 module.exports = router;
