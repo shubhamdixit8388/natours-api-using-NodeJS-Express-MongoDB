@@ -1,6 +1,7 @@
 const User = require('../models/user-model');
 const catchAsync = require('../utils/catch-async');
 const AppError = require('../utils/app-error');
+const factory = require('./handler-factory');
 
 const filterObject = (object, ...allowedFields) => {
   const newObject = {};
@@ -14,6 +15,7 @@ exports.getAllUsers = catchAsync(async (req, res) => {
   const users = await User.find();
   res.status(200).send({
     status: 'success',
+    results: users.length,
     data: {
       users
     }
@@ -68,9 +70,10 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.deleteUserById = (req, res) => {
-  res.status(500).send({
-    status: 'Invalid',
-    message: 'THis API is not implemented'
-  });
-};
+exports.deleteUserById = factory.deleteOne(User);
+// exports.deleteUserById = (req, res) => {
+//   res.status(500).send({
+//     status: 'Invalid',
+//     message: 'THis API is not implemented'
+//   });
+// };

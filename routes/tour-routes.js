@@ -18,7 +18,7 @@ router.route('/top-5-cheap').get(toursController.aliasTopTours, toursController.
 
 router.route('/')
     .get(toursController.getAllTours)
-    .post(toursController.checkBody, toursController.addNewTour);
+    .post(authController.authenticateUser, toursController.addNewTour);
 router.route('/:id')
     .get(toursController.getTourById)
     .patch(toursController.updateTour)
