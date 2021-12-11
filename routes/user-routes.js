@@ -14,11 +14,14 @@ router.route('/update-me').patch(authController.authenticateUser, userController
 router.route('/delete-me').delete(authController.authenticateUser, userController.deleteMe);
 
 router.route('/')
-    .get(authController.authenticateUser, userController.getAllUsers)
-    .post(userController.addNewUser);
+    .get(authController.authenticateUser, authController.checkUserRole('admin'),
+        userController.getAllUsers)
+    .post(authController.authenticateUser, authController.checkUserRole('admin'),
+        userController.addNewUser);
 router.route('/:id')
-    .get(userController.getUserById)
-    .patch(userController.updateUser)
+    .get(authController.authenticateUser, userController.getUserById)
+    .patch(authController.authenticateUser, authController.checkUserRole('admin'),
+        userController.updateUser)
     .delete(authController.authenticateUser, authController.checkUserRole('admin'),
         userController.deleteUserById);
 
