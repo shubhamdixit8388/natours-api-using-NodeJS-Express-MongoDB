@@ -11,7 +11,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 }
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
+/*exports.getAllTours = catchAsync(async (req, res, next) => {
   const featuresApi = new APIFeatures(Tour.find(), req.query)
       .filter()
       .sort()
@@ -31,7 +31,9 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
       tours
     }
   });
-});
+});*/
+
+exports.getAllTours = factory.getAll(Tour);
 
 // exports.getTourById = catchAsync(async (req, res, next) => {
 //   // const tour = await Tour.findOne({_id: req.params.id});
