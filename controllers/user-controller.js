@@ -11,32 +11,11 @@ const filterObject = (object, ...allowedFields) => {
   return newObject;
 }
 
-// exports.getAllUsers = catchAsync(async (req, res) => {
-//   const users = await User.find();
-//   res.status(200).send({
-//     status: 'success',
-//     results: users.length,
-//     data: {
-//       users
-//     }
-//   });
-// });
-
+exports.addNewUser = factory.addOne(User);
+exports.getUserById = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUserById = factory.deleteOne(User);
 exports.getAllUsers = factory.getAll(User);
-
-// exports.getUserById = (req, res) => {
-//   res.status(500).send({
-//     status: 'Invalid',
-//     message: 'THis API is not implemented'
-//   });
-// };
-
-// exports.addNewUser = (req, res) => {
-//   res.status(500).send({
-//     status: 'Invalid',
-//     message: 'THis API is not implemented'
-//   });
-// };
 
 exports.updateMe = catchAsync(async (req, res,next) => {
   // 1. create error if user post password related data
@@ -64,21 +43,3 @@ exports.deleteMe = catchAsync(async (req, res) => {
     status: 'success'
   })
 });
-
-// exports.updateUser = (req, res) => {
-//   res.status(500).send({
-//     status: 'Invalid',
-//     message: 'THis API is not implemented'
-//   });
-// };
-exports.updateUser = factory.updateOne(User);
-
-// exports.deleteUserById = (req, res) => {
-//   res.status(500).send({
-//     status: 'Invalid',
-//     message: 'THis API is not implemented'
-//   });
-// };
-exports.deleteUserById = factory.deleteOne(User);
-exports.addNewUser = factory.addOne(User);
-exports.getUserById = factory.getOne(User);
