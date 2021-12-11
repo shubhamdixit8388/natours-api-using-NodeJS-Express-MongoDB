@@ -10,8 +10,10 @@ router.route('/forgot-password').post(authController.forgotPassword);
 router.route('/reset-password/:token').patch(authController.resetPassword);
 router.route('/update-password').patch(authController.authenticateUser, authController.updatePassword);
 
-router.route('/update-me').patch(authController.authenticateUser, userController.updateMe);
-router.route('/delete-me').delete(authController.authenticateUser, userController.deleteMe);
+router.route('/me').patch(authController.authenticateUser, userController.updateMe);
+router.route('/me').delete(authController.authenticateUser, userController.deleteMe);
+router.route('/me').get(authController.authenticateUser, userController.getMe,
+    userController.getUserById)
 
 router.route('/')
     .get(authController.authenticateUser, authController.checkUserRole('admin'),
