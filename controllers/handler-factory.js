@@ -64,6 +64,7 @@ exports.getAll = Model => catchAsync(async (req, res, next) => {
       .fieldSelection()
       .pagination();
   // Execute query
+  // const docs = await featuresApi.query.explain(); // Explain methods helps to get all info related to execution of query
   const docs = await featuresApi.query;
 
   // Chaining to query
