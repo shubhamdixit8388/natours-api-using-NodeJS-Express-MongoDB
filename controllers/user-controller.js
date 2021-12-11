@@ -11,16 +11,18 @@ const filterObject = (object, ...allowedFields) => {
   return newObject;
 }
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
-  res.status(200).send({
-    status: 'success',
-    results: users.length,
-    data: {
-      users
-    }
-  });
-});
+// exports.getAllUsers = catchAsync(async (req, res) => {
+//   const users = await User.find();
+//   res.status(200).send({
+//     status: 'success',
+//     results: users.length,
+//     data: {
+//       users
+//     }
+//   });
+// });
+
+exports.getAllUsers = factory.getAll(User);
 
 // exports.getUserById = (req, res) => {
 //   res.status(500).send({
