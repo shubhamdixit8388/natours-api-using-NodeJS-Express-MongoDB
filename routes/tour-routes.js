@@ -16,6 +16,9 @@ router.use('/:tourId/reviews', reviewRoutes)
 
 router.route('/top-5-cheap').get(toursController.aliasTopTours, toursController.getAllTours)
 
+router.route('/tour-within/:distance/center/:latLang/unit/:distanceUnit')
+    .get(toursController.getToursWithinArea);
+
 router.route('/')
     .get(toursController.getAllTours)
     .post(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
