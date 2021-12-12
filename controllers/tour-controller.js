@@ -39,3 +39,39 @@ exports.getToursWithinArea = catchAsync(async (req, res, next) => {
     data: tours
   });
 });
+
+exports.getTourDistancesFromSpecificLocation = catchAsync(async (req, res, next) => {
+  const {latLang, distanceUnit} = req.params;
+  const [latitude, longitude] = latLang.split(',');
+
+  if (!(latitude && longitude)) {
+    return next(new AppError('Please provide latitude and longitude in correct format i.e. lat,lang', 400));
+  }
+
+  const multiplier = distanceUnit === 'mi' ? 0.000621371 : 0.001;
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [longitude * 1, latitude * 1]
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier
+      }
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1
+      }
+    }
+  ]);
+
+  res.status(200).send({
+    status: 'success',
+    results: distances.length,
+    data: distances
+  });
+});

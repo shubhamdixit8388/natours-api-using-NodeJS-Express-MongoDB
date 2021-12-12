@@ -18,6 +18,8 @@ router.route('/top-5-cheap').get(toursController.aliasTopTours, toursController.
 
 router.route('/tour-within/:distance/center/:latLang/unit/:distanceUnit')
     .get(toursController.getToursWithinArea);
+router.route('/distances/:latLang/unit/:distanceUnit')
+    .get(toursController.getTourDistancesFromSpecificLocation);
 
 router.route('/')
     .get(toursController.getAllTours)
