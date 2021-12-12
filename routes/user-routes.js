@@ -8,13 +8,21 @@ router.route('/signup').post(authController.signup);
 router.route('/login').post(authController.login);
 router.route('/forgot-password').post(authController.forgotPassword);
 router.route('/reset-password/:token').patch(authController.resetPassword);
-router.route('/update-password').patch(authController.authenticateUser, authController.updatePassword);
 
-router.route('/update-me').patch(authController.authenticateUser, userController.updateMe);
-router.route('/delete-me').delete(authController.authenticateUser, userController.deleteMe);
+// Creating middleware of authenticate user so that it will applicable to all API's below this middleware
+router.use(authController.authenticateUser)
+
+router.route('/update-password').patch(authController.updatePassword);
+
+router.route('/me').patch(userController.updateMe);
+router.route('/me').delete(userController.deleteMe);
+router.route('/me').get(userController.getMe, userController.getUserById)
+
+// Creating middleware to check user is admin or not, If user is admin then we allow user to do following actions
+router.use(authController.checkUserRole('admin'))
 
 router.route('/')
-    .get(authController.authenticateUser, userController.getAllUsers)
+    .get(userController.getAllUsers)
     .post(userController.addNewUser);
 router.route('/:id')
     .get(userController.getUserById)

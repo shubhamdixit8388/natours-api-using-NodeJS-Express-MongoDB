@@ -1,17 +1,7 @@
 const Tour = require('../models/tour-model');
-const APIFeatures = require('./../utils/api-features');
-const catchAsync = require('../utils/catch-async');
+const factory = require('./handler-factory');
 const AppError = require('../utils/app-error');
-
-exports.checkBody = (req, res, next) => {
-  // if (!(req.body.name && req.body.price)) {
-  //   return res.status(400).send({
-  //     status: 'fail',
-  //     message: 'Missing name or price'
-  //   });
-  // }
-  next();
-}
+const catchAsync = require('../utils/catch-async');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -20,80 +10,68 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 }
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const featuresApi = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .fieldSelection()
-      .pagination();
-  // Execute query
-  const tours = await featuresApi.query;
+exports.addNewTour = factory.addOne(Tour);
+exports.getTourById = factory.getOne(Tour, ['reviews', {
+  path: 'guides',
+  select: '-__v -passwordChangedAt'
+}]);
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTourById = factory.deleteOne(Tour);
+exports.getAllTours = factory.getAll(Tour);
 
-  // Chaining to query
-  // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
+// /tour-within/:distance/center/:latLang/unit/:distanceUnit
+// /tour-within/122/center/39.3509001,-112.1882077/unit/mi
+exports.getToursWithinArea = catchAsync(async (req, res, next) => {
+  const {distance, latLang, distanceUnit} = req.params;
+  const [latitude, longitude] = latLang.split(',');
 
-  // Send response
+  if (!(latitude && longitude)) {
+    return next(new AppError('Please provide latitude and longitude in correct format i.e. lat,lang', 400));
+  }
+  const radius = distanceUnit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  const tours = await Tour.find({
+    startLocation: {$geoWithin: {$centerSphere: [[longitude, latitude], radius]}}
+  });
+
   res.status(200).send({
     status: 'success',
     results: tours.length,
-    data: {
-      tours
-    }
+    data: tours
   });
 });
 
-exports.addNewTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).send({
-    status: 'success',
-    data: {
-      tour: newTour
-    }
-  });
-});
+exports.getTourDistancesFromSpecificLocation = catchAsync(async (req, res, next) => {
+  const {latLang, distanceUnit} = req.params;
+  const [latitude, longitude] = latLang.split(',');
 
-exports.getTourById = catchAsync(async (req, res, next) => {
-  // const tour = await Tour.findOne({_id: req.params.id});
-  const tour = await Tour.findById(req.params.id);
-
-  if(!tour) {
-     return next(new AppError('No tour found with this id', 404));
+  if (!(latitude && longitude)) {
+    return next(new AppError('Please provide latitude and longitude in correct format i.e. lat,lang', 400));
   }
+
+  const multiplier = distanceUnit === 'mi' ? 0.000621371 : 0.001;
+
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [longitude * 1, latitude * 1]
+        },
+        distanceField: 'distance',
+        distanceMultiplier: multiplier
+      }
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1
+      }
+    }
+  ]);
 
   res.status(200).send({
     status: 'success',
-    data: {
-      tour: tour
-    }
-  });
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
-
-  if(!tour) {
-    return next(new AppError('No tour found with this id', 404));
-  }
-
-  res.status(200).send({
-    status: 'success',
-    data: {
-      tour
-    }
-  });
-});
-
-exports.deleteTourById = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-
-  if(!tour) {
-    return next(new AppError('No tour found with this id', 404));
-  }
-
-  res.status(204).send({
-    status: 'success'
+    results: distances.length,
+    data: distances
   });
 });
