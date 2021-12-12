@@ -38,7 +38,7 @@ exports.signup = catchAsync(async(req, res) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    role: 'admin'
+    // role: 'user'
     // passwordChangedAt: req.body.passwordChangedAt
   });
 

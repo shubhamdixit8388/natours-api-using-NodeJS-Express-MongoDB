@@ -1,7 +1,9 @@
 const fs = require('fs');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const Tour = require('./../../models/tour-model')
+const Tour = require('./../../models/tour-model');
+const User = require('./../../models/user-model');
+const Review = require('./../../models/review-model');
 
 dotenv.config({path: `${__dirname}/../../config.env`});
 
@@ -17,11 +19,15 @@ mongoose.connect(DB, {
     .then(() => console.log('Database connection succeed!!!'))
     .catch(() => console.log('Database connection Failed!!!'));
 
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'));
 
 const importDataToDB = async () => {
   try {
     await Tour.create(tours);
+    await User.create(users, {validateBeforeSave: false});
+    await Review.create(reviews);
     console.log('Data added successfully');
   } catch (error) {
     console.log('Error data uploading: ', error);
@@ -32,6 +38,8 @@ const importDataToDB = async () => {
 const deleteDataFromDB = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
     console.log('Data Tour documents successfully');
   } catch (error) {
     console.log('Error tour document deleting: ', error);

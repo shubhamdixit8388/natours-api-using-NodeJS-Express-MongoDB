@@ -7,6 +7,7 @@ const hpp = require('hpp');
 
 const userRoutes = require('./routes/user-routes');
 const tourRoutes = require('./routes/tour-routes');
+const reviewRoutes = require('./routes/review-routes');
 const AppError = require('./utils/app-error');
 const globalErrorHandler = require('./controllers/error-controller');
 
@@ -39,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // limit request for API from same IP address
 const limiter = rateLimit({
-  max: 2, // Based on application limit
+  max: 100, // Based on application limit
   windowMs: 60 * 60 * 1000, // in milliseconds
   message: 'Too many requests from this IP, please try after an hour'
 });
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 // Handling unknown route
 app.all('*', (req, res, next) => {
