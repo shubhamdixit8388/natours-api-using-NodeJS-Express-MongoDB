@@ -11,7 +11,7 @@ router.use(authController.authenticateUser);
 // POST /tours/<tourId>/reviews
 router.route('')
     .get(reviewController.getAllReviews)
-    .post(authController.checkUserRole('admin'), reviewController.setTourUserId, reviewController.createReview);
+    .post(authController.checkUserRole('user'), reviewController.setTourUserId, reviewController.createReview);
 
 router.route('/:id')
     .get(reviewController.getReviewById)
