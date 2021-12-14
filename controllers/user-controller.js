@@ -36,16 +36,16 @@ const upload = multer({
 
 exports.uploadUserPhoto = upload.single('photo');
 
-exports.resizePhoto = (req, res, next) => {
+exports.resizePhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
   req.file.filename = `public/img/users/${req.user.id}-${Date.now()}.jpeg`;
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
       .resize(500, 500)
       .toFormat('jpeg')
       .jpeg({quality: 90})
       .toFile(req.file.filename);
   next();
-}
+});
 
 const filterObject = (object, ...allowedFields) => {
   const newObject = {};
@@ -67,7 +67,6 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.updateMe = catchAsync(async (req, res,next) => {
-  console.log('req.file: ', req.file);
   // 1. create error if user post password related data
   if (req.body.password || req.body.passwordConfirm) {
      return next(new AppError('this route is not for password update', 403))
