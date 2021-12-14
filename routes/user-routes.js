@@ -15,7 +15,8 @@ router.use(authController.authenticateUser)
 
 router.route('/update-password').patch(authController.updatePassword);
 
-router.route('/me').patch(userController.uploadUserPhoto, userController.updateMe);
+router.route('/me')
+    .patch(userController.uploadUserPhoto, userController.resizePhoto, userController.updateMe);
 router.route('/me').delete(userController.deleteMe);
 router.route('/me').get(userController.getMe, userController.getUserById)
 
