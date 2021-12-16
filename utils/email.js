@@ -2,6 +2,11 @@ const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
 
+// Important email services:
+// 1. Mailtrap - Used to send email actually sending it to actual email id - Useful in development environment
+// 2. SendGrid - It works as a domain which helps use to send email - Useful in production environment
+// 3. Mailsac - Used to create fake email - Useful in development environment
+
 class Email {
   constructor(user, url) {
     this.to = user.email;
