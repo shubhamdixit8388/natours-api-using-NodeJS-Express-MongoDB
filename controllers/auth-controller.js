@@ -4,7 +4,7 @@ const { promisify } = require('util');
 const catchAsync = require('../utils/catch-async');
 const User = require('../models/user-model');
 const AppError = require('./../utils/app-error');
-const sendEmail = require('./../utils/email');
+const Email = require('./../utils/email');
 
 // Stateless authentication
 const getJWT = (id) => {
@@ -41,6 +41,9 @@ exports.signup = catchAsync(async(req, res) => {
     // role: 'user'
     // passwordChangedAt: req.body.passwordChangedAt
   });
+
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  await new Email(newUser, url).sendWelcome();
 
   createSendToken(newUser, 201, res);
 });
@@ -119,11 +122,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const requestUrl = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
   const message = `Forgot your password by clicking on below link: ${requestUrl}`;
   try {
-    await sendEmail(user.email, 'Forgot password link', message);
-    res.status(200).send({
-      status: 'success',
-      message: 'Email send successfully'
-    });
+    // await sendEmail(user.email, 'Forgot password link', message);
+    // res.status(200).send({
+    //   status: 'success',
+    //   message: 'Email send successfully'
+    // });
   } catch (err) {
     user.passwordResetToken = undefined;
     user.passwordResetTokenExpiresIn = undefined;
