@@ -48,8 +48,11 @@ class Email {
   }
 
   async sendWelcome() {
-    // Default email
     await this.send('welcome', 'Welcome to family');
+  }
+
+  async sendPasswordReset() {
+    await this.send('password-reset', 'Your password reset token(Valid for 10 minutes only)');
   }
 }
 
