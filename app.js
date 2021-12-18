@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
+const compression = require('compression');
 
 const userRoutes = require('./routes/user-routes');
 const tourRoutes = require('./routes/tour-routes');
@@ -48,6 +49,8 @@ app.use('/api', limiter);
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`))
+
+app.use(compression())
 
 // Test middleware
 app.use((req, res, next) => {

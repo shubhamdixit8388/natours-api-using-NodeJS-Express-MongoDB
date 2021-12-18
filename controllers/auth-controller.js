@@ -135,7 +135,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 })
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
-  console.log(req.url);
   // 1. get user based on token
   const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 

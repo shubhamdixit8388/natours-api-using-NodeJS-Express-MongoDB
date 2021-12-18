@@ -9,7 +9,6 @@ process.on('uncaughtException', err => {
 });
 
 const app = require('./app');
-// console.log(process.env);
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
 
 mongoose.connect(DB, {
@@ -22,7 +21,7 @@ mongoose.connect(DB, {
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
-  console.log(`App running on port ${port}...`)
+  // console.log(`App running on port ${port}...`)
 });
 
 process.on('unhandledRejection', err => {
