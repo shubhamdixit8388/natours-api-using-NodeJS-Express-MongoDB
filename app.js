@@ -17,6 +17,9 @@ const morgan = require('morgan');
 // GLOBAL Middlewares
 const app = new express();
 
+// Enable proxy requests
+app.enable('trust proxy')
+
 // helmet headers. Helmet is a collection of 14 middleware which adds different header options for security reason
 app.use(helmet());
 
