@@ -28,7 +28,7 @@ router.route('/')
 router.route('/:id')
     .get(toursController.getTourById)
     .patch(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
-        toursController.updateTour)
+        toursController.uploadTourPhotos, toursController.resizeTourImages, toursController.updateTour)
     .delete(authController.authenticateUser, authController.checkUserRole('admin', 'lead-guide'),
         toursController.deleteTourById);
 
