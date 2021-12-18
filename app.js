@@ -50,7 +50,7 @@ app.use('/api', limiter);
 // Serving static files
 app.use(express.static(`${__dirname}/public`))
 
-app.use(compression())
+app.use(compression());
 
 // Test middleware
 app.use((req, res, next) => {
